@@ -35,3 +35,6 @@ simulation
 # Data
 data/
 .DS_Store
+
+# other
+TODO.txt

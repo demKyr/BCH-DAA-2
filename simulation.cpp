@@ -31,8 +31,9 @@ typedef struct {
 } BlockTemplate;
 
 double UNOBSERVABLE_hash_rate(double t) {
-  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp( (t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
-  return (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
+  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
+  return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT));
+  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
 }
 
 int main(int argc, char* argv[]) {

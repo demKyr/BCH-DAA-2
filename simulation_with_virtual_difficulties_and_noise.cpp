@@ -12,6 +12,9 @@
 // SELECT ONE OF THE FOLLOWING HASH RATE FUNCTIONS (NON_ADAPTIVE OR ADAPTIVE) TO RUN THE SIMULATION
 #define NON_ADAPTIVE
 // #define ADAPTIVE
+
+#define NOISE
+// #define LIMITED_PRINTED_BLOCKS
 // ----------------- SIMULATION PARAMETERS -----------------
 
 #define NETWORK_RESOLUTION 1.0
@@ -32,6 +35,8 @@
 #define MAX_NUMBER_OF_LAYERS 4
 #define NUM_OF_LAST_BLOCKS 6
 
+#define PRINT_EVERY_THIS_MANY_BLOCKS 100    // parameter to control the number of printed blocks
+
 typedef struct {  
   double t;
   double target;
@@ -40,10 +45,13 @@ typedef struct {
 
 #ifdef NON_ADAPTIVE
 double non_adaptive_hash_rate_function(double t) {
+  // double INITIAL_HASH_RATE = 7000000;
+  double NoiselessHashRate;
   // Will and Iain's hash functions
-  return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
+  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
   // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT));
-  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
+  NoiselessHashRate = (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
+  // return ((t < 2010.5*YEAR) ? 7000000 : 7000000*30) * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
 
   // constant hash function
   // return INITIAL_HASH_RATE;
@@ -80,6 +88,12 @@ double non_adaptive_hash_rate_function(double t) {
   
   // sin and linearly increasing hash function
   // return INITIAL_HASH_RATE + INITIAL_HASH_RATE/YEAR * (t-GENESIS_TIME) + INITIAL_HASH_RATE * sin(2*M_PI*(t-GENESIS_TIME)/(YEAR));
+
+  #ifdef NOISE
+  return NoiselessHashRate * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
+  #else
+  return NoiselessHashRate; // without noise
+  #endif  
 }
 #endif
 
@@ -237,20 +251,24 @@ int main(int argc, char* argv[]) {
       blocks_virtual_relative_targets[n][i] = virtual_relative_target[i];
     }
 
-    #ifdef NON_ADAPTIVE
-    fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, non_adaptive_hash_rate_function(t));
-    for (int l=0; l<NUMBER_OF_LAYERS; l++) {
-      fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
-    }
-    fprintf(fp, ",%.10lf,%0.10lf\n",INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);	 
+    #ifdef LIMITED_PRINTED_BLOCKS
+    if(n % PRINT_EVERY_THIS_MANY_BLOCKS == 0) {
     #endif
-    #ifdef ADAPTIVE
-    fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, adaptive_hash_rate_function(cur_running_avg, prev_running_avg, t));
-    for (int l=0; l<NUMBER_OF_LAYERS; l++) {
-      fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
-    }
-    fprintf(fp, ",%.10lf,%0.10lf\n", INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);
-    #endif      
+      #ifdef NON_ADAPTIVE
+      fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, non_adaptive_hash_rate_function(t));
+      for (int l=0; l<NUMBER_OF_LAYERS; l++) {
+        fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
+      }
+      fprintf(fp, ",%.10lf,%0.10lf\n",INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);	 
+      #endif
+      #ifdef ADAPTIVE
+      fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, adaptive_hash_rate_function(cur_running_avg, prev_running_avg, t));
+      for (int l=0; l<NUMBER_OF_LAYERS; l++) {
+        fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
+      }
+      fprintf(fp, ",%.10lf,%0.10lf\n", INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);
+      #endif      
+    // }
 
     #ifdef ADAPTIVE
     q_cur.push(INITIAL_ABS_TARGET/(blocks[n].target));
@@ -264,6 +282,10 @@ int main(int argc, char* argv[]) {
     q_cur.pop();
     q_prev.pop();
     #endif
+  #ifdef LIMITED_PRINTED_BLOCKS
+  }
+  #endif
+
   }
 
   free(blocks);

@@ -3,10 +3,10 @@ CXX = g++
 CXXFLAGS = -std=c++14 -Wall -Wextra
 
 # Name of the executable and source file
-# EXEC = simulation_with_virtual_difficulties
-# SRC = simulation_with_virtual_difficulties.cpp
-EXEC = simulation
-SRC = simulation.cpp
+EXEC = simulation_with_virtual_difficulties_and_noise
+SRC = simulation_with_virtual_difficulties_and_noise.cpp
+# EXEC = simulation
+# SRC = simulation.cpp
 
 # Default target: compile the program
 all: $(EXEC)

@@ -48,9 +48,9 @@ double non_adaptive_hash_rate_function(double t) {
   // double INITIAL_HASH_RATE = 7000000;
   double NoiselessHashRate;
   // Will and Iain's hash functions
-  // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
+  NoiselessHashRate = (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
   // return (t < 2010.5*YEAR) ? 10000000 : 10000000*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT));
-  NoiselessHashRate = (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
+  // NoiselessHashRate = (t < 2010.5*YEAR) ? 10000000 : 10000000*30;
   // return ((t < 2010.5*YEAR) ? 7000000 : 7000000*30) * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
 
   // constant hash function

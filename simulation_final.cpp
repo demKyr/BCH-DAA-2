@@ -9,7 +9,7 @@
 #include <queue>
 
 // ----------------- SIMULATION PARAMETERS -----------------
-#define NOISE
+// #define NOISE
 // ----------------- SIMULATION PARAMETERS -----------------
 
 #define NETWORK_RESOLUTION 1.0

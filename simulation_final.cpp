@@ -43,14 +43,24 @@ double unobservable_hash_rate_function(double t) {
     double initial_hash_rate = 7000000;
     double NoiselessHashRate;
 
-    // Superexponential hash function
-    // NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
+    // linearly increasing hash function
+    // NoiselessHashRate = initial_hash_rate + (initial_hash_rate/YEAR) * (t-GENESIS_TIME);
+
+    // quadratically increasing hash function
+    // NoiselessHashRate = initial_hash_rate + (initial_hash_rate/pow(YEAR,2)) * pow((t-GENESIS_TIME),2);
 
     // Exponential hash function
+    // NoiselessHashRate = initial_hash_rate*exp((t-GENESIS_TIME)/(10*FORTNIGHT));
+
+    // Exponential hash function with jump in 2010.5
     // NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT));
+
+    // Exponential-of-quadratic hash function with jump in 2010.5
+    // NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
 
     // Step hash function
     NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30;
+
     
     #ifdef NOISE
     return NoiselessHashRate * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
@@ -140,7 +150,6 @@ int main(int argc, char* argv[]) {
 
             for (int l=0; l<NUMBER_OF_LAYERS; l++) 
                 candidate.height[l] = blocks[n].height[l] + target[l]/candidate.target;
-                // candidate.target is the target given to the miners
                 // target[l]/candidate.target is the amount of fluid block (block height) mined in layer l
                 
                 
@@ -159,8 +168,8 @@ int main(int argc, char* argv[]) {
             fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
         }
         fprintf(fp, ",%.10lf,%0.10lf\n",INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);	 
-
     }
+    delete[] virtual_relative_target;
 
     free(blocks);
       

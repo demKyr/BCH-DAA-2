@@ -86,14 +86,17 @@ int main(int argc, char* argv[]) {
         case 2:
             layer_frequency = std::vector<double>{0.5 * FORTNIGHTLY, 0.5 * FORTNIGHTLY}; // modified st_peters (2 layers)
             // layer_frequency = std::vector<double>{0.8 * FORTNIGHTLY, 0.2 * FORTNIGHTLY}; // modified st_peters (2 layers)
+            // layer_frequency = std::vector<double>{0.2 * FORTNIGHTLY, 0.8 * FORTNIGHTLY}; // modified st_peters (2 layers)
             break;
         case 3:
-            layer_frequency = std::vector<double>{0.5 * FORTNIGHTLY, 0.3 * FORTNIGHTLY, 0.2 * FORTNIGHTLY}; // hyper st_peters (3 layers)
-            // layer_frequency = std::vector<double>{0.3333333 * FORTNIGHTLY, 0.3333333 * FORTNIGHTLY, 0.3333333 * FORTNIGHTLY}; // hyper st_peters (3 layers)
+        // layer_frequency = std::vector<double>{0.3333333 * FORTNIGHTLY, 0.3333333 * FORTNIGHTLY, 0.3333333 * FORTNIGHTLY}; // hyper st_peters (3 layers)
+        layer_frequency = std::vector<double>{0.5 * FORTNIGHTLY, 0.3 * FORTNIGHTLY, 0.2 * FORTNIGHTLY}; // hyper st_peters (3 layers)
+        // layer_frequency = std::vector<double>{0.2 * FORTNIGHTLY, 0.3 * FORTNIGHTLY, 0.5 * FORTNIGHTLY}; // hyper st_peters (3 layers)
             break;
         case 4:
+        // layer_frequency = std::vector<double>{0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY}; // hyperhyper st_peters (4 layers)
             layer_frequency = std::vector<double>{0.4 * FORTNIGHTLY, 0.3 * FORTNIGHTLY, 0.2 * FORTNIGHTLY, 0.1 * FORTNIGHTLY}; // hyperhyper st_peters (4 layers)
-            // layer_frequency = std::vector<double>{0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY, 0.25 * FORTNIGHTLY}; // hyperhyper st_peters (4 layers)
+            // layer_frequency = std::vector<double>{0.1 * FORTNIGHTLY, 0.2 * FORTNIGHTLY, 0.3 * FORTNIGHTLY, 0.4 * FORTNIGHTLY}; // hyperhyper st_peters (4 layers)
             break;
         default:
             return 1;

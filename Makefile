@@ -1,6 +1,8 @@
 # Define the compiler and flags
-CXX = g++
-CXXFLAGS = -std=c++14 -Wall -Wextra
+# CXX = g++
+# CXXFLAGS = -std=c++14 -Wall -Wextra -static-libstdc++
+CXX = clang++
+CXXFLAGS = -std=c++17 -stdlib=libc++ -Wall -O2
 
 # Name of the executable and source file
 EXEC = simulation_final

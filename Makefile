@@ -1,27 +1,40 @@
 # Define the compiler and flags
-# CXX = g++
-# CXXFLAGS = -std=c++14 -Wall -Wextra -static-libstdc++
 CXX = clang++
 CXXFLAGS = -std=c++17 -stdlib=libc++ -Wall -O2
 
-# Name of the executable and source file
-EXEC = simulation_final
-SRC = simulation_final.cpp
+# Names of all the executables
+EXEC_NEFDAN = simulation_NefdaN
+EXEC_BTC   = simulation_BTC_DAA
 
-# Default target: compile the program
-all: $(EXEC)
+ALL_EXECS = $(EXEC_NEFDAN) $(EXEC_BTC) 
 
-# Compile the program
-$(EXEC): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $(EXEC) $(SRC)
+# Default target: compile all three programs when running "make"
+all: $(ALL_EXECS)
 
-# Run the program with parameters 1, 2, 3, and 4
-run: $(EXEC)
-	./$(EXEC) 1
-	./$(EXEC) 2
-	./$(EXEC) 3
-	./$(EXEC) 4
+# Compile rules for each individual executable
+$(EXEC_NEFDAN): simulation_NefdaN.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_NEFDAN) simulation_NefdaN.cpp
 
-# Clean up generated files
+$(EXEC_BTC): simulation_BTC_DAA.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_BTC) simulation_BTC_DAA.cpp
+
+
+# Run original simulation with parameters 1, 2, 3, 4
+run: $(EXEC_NEFDAN)
+	./$(EXEC_NEFDAN) 1
+	./$(EXEC_NEFDAN) 2
+	./$(EXEC_NEFDAN) 3
+	./$(EXEC_NEFDAN) 4
+
+# Run Bitcoin simulation without args
+run_btc: $(EXEC_BTC)
+	./$(EXEC_BTC)
+
+# Run everything: the original run targets + btc + eth
+run_all: run run_btc
+
+# Clean up all generated executables
 clean:
-	rm -f $(EXEC)
+	rm -f $(ALL_EXECS)
+
+.PHONY: all run run_btc run_all clean

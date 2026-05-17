@@ -93,7 +93,8 @@ int main() {
 if (n > DIGISHIELD_WINDOW) {
             // 1. Compute historical window timespans with clear semantic names
             double ideal_timespan = DIGISHIELD_WINDOW * IDEAL_INTERBLOCK_TIME;
-            double actual_timespan = blocks[n].t - blocks[n - DIGISHIELD_WINDOW].t;
+            // double actual_timespan = blocks[n].t - blocks[n - DIGISHIELD_WINDOW].t;
+            double actual_timespan = blocks[n - 1].t - blocks[n - 1 - DIGISHIELD_WINDOW].t;
             // 2. Apply the DigiShield Tempering Factor to get the adjusted goal timespan
             // double goal_timespan = ideal_timespan + (actual_timespan - ideal_timespan) / 4.0;
             double goal_timespan = ideal_timespan + (actual_timespan - ideal_timespan) / (4.0 * 600 / 75); // adjusted tempering factor to account for the shorter ideal inter-block time

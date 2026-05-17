@@ -111,9 +111,9 @@ int main() {
         // Use the scaled divisor here to ensure rapid adaptation
         double difficulty_step = (current_difficulty / ADJUSTMENT_DIVISOR) * adjustment_multiplier;
         current_difficulty = current_difficulty + difficulty_step;
-        if (current_difficulty < 1.0) { 
-            current_difficulty = 1.0; 
-        }
+        // if (current_difficulty < 1.0) { 
+        //     current_difficulty = 1.0; 
+        // }
         current_target = 1.0 / current_difficulty;
 
         fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f,%.10lf,%0.10lf\n", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, unobservable_hash_rate_function(t), INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);

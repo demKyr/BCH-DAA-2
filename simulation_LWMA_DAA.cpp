@@ -9,27 +9,7 @@
 #include <queue>
 #include <algorithm> // Required for std::max and std::min
 
-// ----------------- SIMULATION PARAMETERS -----------------
-// #define NOISE
-// ----------------- SIMULATION PARAMETERS -----------------
-
-#define NETWORK_RESOLUTION 1.0
-
-#define DAY (86400.0)
-#define FORTNIGHT (14.0*DAY)
-#define YEAR (365.25*DAY)
-
-#define DAILY (1.0/DAY)
-#define FORTNIGHTLY (1.0/FORTNIGHT)
-#define YEARLY (1.0/YEAR)
-
-#define INITIAL_ABS_TARGET (1.0/4294967296.0)
-#define IDEAL_INTERBLOCK_TIME (600.0)
-#define GENESIS_TIME (2009.0*YEAR)
-#define FINISH_TIME (2025.0*YEAR)
-
-#define MAX_NUMBER_OF_LAYERS 4
-#define NUM_OF_LAST_BLOCKS 6
+#include "hashrate.h"
 
 #define PRINT_EVERY_THIS_MANY_BLOCKS 100    // parameter to control the number of printed blocks
 
@@ -41,20 +21,6 @@ typedef struct {
     double target;
     int height; 
 } BlockTemplate;
-
-double unobservable_hash_rate_function(double t) {
-    double initial_hash_rate = 7000000;
-    double NoiselessHashRate;
-
-    // Step hash function
-    NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30;
-    
-    #ifdef NOISE
-    return NoiselessHashRate * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
-    #else
-    return NoiselessHashRate; // without noise
-    #endif  
-}
 
 int main() {
 

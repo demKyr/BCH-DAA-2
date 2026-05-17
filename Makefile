@@ -5,18 +5,27 @@ CXXFLAGS = -std=c++17 -stdlib=libc++ -Wall -O2
 # Names of all the executables
 EXEC_NEFDAN = simulation_NefdaN
 EXEC_BTC   = simulation_BTC_DAA
+EXEC_LWMA  = simulation_LWMA_DAA
+EXEC_DIGISHIELD = simulation_Digishield_DAA
 
-ALL_EXECS = $(EXEC_NEFDAN) $(EXEC_BTC) 
+ALL_EXECS = $(EXEC_NEFDAN) $(EXEC_BTC) $(EXEC_LWMA) $(EXEC_DIGISHIELD)
 
-# Default target: compile all three programs when running "make"
+# Default target: compile all programs when running "make"
 all: $(ALL_EXECS)
 
 # Compile rules for each individual executable
-$(EXEC_NEFDAN): simulation_NefdaN.cpp
-	$(CXX) $(CXXFLAGS) -o $(EXEC_NEFDAN) simulation_NefdaN.cpp
+# Added hashrate.cpp to the compilation and hashrate.h as a dependency
+$(EXEC_NEFDAN): simulation_NefdaN.cpp hashrate.cpp hashrate.h
+	$(CXX) $(CXXFLAGS) -o $(EXEC_NEFDAN) simulation_NefdaN.cpp hashrate.cpp
 
-$(EXEC_BTC): simulation_BTC_DAA.cpp
-	$(CXX) $(CXXFLAGS) -o $(EXEC_BTC) simulation_BTC_DAA.cpp
+$(EXEC_BTC): simulation_BTC_DAA.cpp hashrate.cpp hashrate.h
+	$(CXX) $(CXXFLAGS) -o $(EXEC_BTC) simulation_BTC_DAA.cpp hashrate.cpp
+
+$(EXEC_LWMA): simulation_LWMA_DAA.cpp hashrate.cpp hashrate.h
+	$(CXX) $(CXXFLAGS) -o $(EXEC_LWMA) simulation_LWMA_DAA.cpp hashrate.cpp
+
+$(EXEC_DIGISHIELD): simulation_Digishield_DAA.cpp hashrate.cpp hashrate.h
+	$(CXX) $(CXXFLAGS) -o $(EXEC_DIGISHIELD) simulation_Digishield_DAA.cpp hashrate.cpp
 
 
 # Run original simulation with parameters 1, 2, 3, 4
@@ -30,11 +39,19 @@ run: $(EXEC_NEFDAN)
 run_btc: $(EXEC_BTC)
 	./$(EXEC_BTC)
 
-# Run everything: the original run targets + btc + eth
-run_all: run run_btc
+# Run LWMA simulation without args
+run_lwma: $(EXEC_LWMA)
+	./$(EXEC_LWMA)
 
-# Clean up all generated executables
+# Run DigiShield simulation without args
+run_digishield: $(EXEC_DIGISHIELD)
+	./$(EXEC_DIGISHIELD)
+
+# Run everything: the original run targets + btc
+run_all: run run_btc run_lwma run_digishield
+
+# Clean up all generated executables and any stray object files
 clean:
 	rm -f $(ALL_EXECS)
 
-.PHONY: all run run_btc run_all clean
+.PHONY: all run run_btc run_lwma run_digishield run_all clean

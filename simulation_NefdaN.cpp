@@ -8,28 +8,9 @@
 #include <vector>
 #include <queue>
 
-// ----------------- SIMULATION PARAMETERS -----------------
-// #define NOISE
-// ----------------- SIMULATION PARAMETERS -----------------
-
-#define NETWORK_RESOLUTION 1.0
-
-#define DAY (86400.0)
-#define FORTNIGHT (14.0*DAY)
-#define YEAR (365.25*DAY)
-
-#define DAILY (1.0/DAY)
-#define FORTNIGHTLY (1.0/FORTNIGHT)
-#define YEARLY (1.0/YEAR)
-
-#define INITIAL_ABS_TARGET (1.0/4294967296.0)
-#define IDEAL_INTERBLOCK_TIME (600.0)
-#define GENESIS_TIME (2009.0*YEAR)
-#define FINISH_TIME (2025.0*YEAR)
+#include "hashrate.h"
 
 #define MAX_NUMBER_OF_LAYERS 4
-#define NUM_OF_LAST_BLOCKS 6
-
 #define PRINT_EVERY_THIS_MANY_BLOCKS 100    // parameter to control the number of printed blocks
 
 typedef struct {  
@@ -37,37 +18,6 @@ typedef struct {
     double target;
     double height[MAX_NUMBER_OF_LAYERS]; // last layer will be an integer!
 } BlockTemplate;
-
-double unobservable_hash_rate_function(double t) {
-    // double initial_hash_rate = 10000000;
-    double initial_hash_rate = 7000000;
-    double NoiselessHashRate;
-
-    // linearly increasing hash function
-    // NoiselessHashRate = initial_hash_rate + (initial_hash_rate/YEAR) * (t-GENESIS_TIME);
-
-    // quadratically increasing hash function
-    // NoiselessHashRate = initial_hash_rate + (initial_hash_rate/pow(YEAR,2)) * pow((t-GENESIS_TIME),2);
-
-    // Exponential hash function
-    // NoiselessHashRate = initial_hash_rate*exp((t-GENESIS_TIME)/(10*FORTNIGHT));
-
-    // Exponential hash function with jump in 2010.5
-    // NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT));
-
-    // Exponential-of-quadratic hash function with jump in 2010.5
-    // NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30*exp((t-2010.5*YEAR)/(10*FORTNIGHT) + pow((t-2010.5*YEAR)/(15*FORTNIGHT), 2));
-
-    // Step hash function
-    NoiselessHashRate = (t < 2010.5*YEAR) ? initial_hash_rate : initial_hash_rate*30;
-
-    
-    #ifdef NOISE
-    return NoiselessHashRate * (1 + 0.51*sin((t-GENESIS_TIME)*4*FORTNIGHTLY)); // with noise
-    #else
-    return NoiselessHashRate; // without noise
-    #endif  
-}
 
 
 int main(int argc, char* argv[]) {

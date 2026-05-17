@@ -53,22 +53,30 @@ int main(int argc, char* argv[]) {
     }
 
     srand48(time(NULL));
-    
     BlockTemplate *blocks = (BlockTemplate *) calloc(1000000, sizeof(BlockTemplate));
-
     double blocks_virtual_relative_targets[1000000][MAX_NUMBER_OF_LAYERS];
-
     int n=0;
-    
     double t = GENESIS_TIME;
-
     BlockTemplate candidate = {t, INITIAL_ABS_TARGET, {0} };
-
     blocks[n] = candidate; // genesis block
     blocks_virtual_relative_targets[0][0] = 1.0;
     blocks_virtual_relative_targets[0][1] = 1.0;
     blocks_virtual_relative_targets[0][2] = 1.0;
     blocks_virtual_relative_targets[0][3] = 1.0;
+
+    #ifdef ADAPTIVE
+    // queue for avg difficulty/avg target
+    std::queue <double> q_cur;
+    std::queue <double> q_prev;
+    double cur_running_sum = NUM_OF_LAST_BLOCKS;
+    double prev_running_sum = NUM_OF_LAST_BLOCKS;
+    double cur_running_avg = 1;
+    double prev_running_avg = 1;
+    for (int i = 0; i < NUM_OF_LAST_BLOCKS; i++){
+        q_cur.push(1.0);
+        q_prev.push(1.0);
+    }
+    #endif
 
     // print headers
     fprintf(fp, "BLOCK,timestamp,t,block_time,real_hash_rate,");
@@ -78,7 +86,12 @@ int main(int argc, char* argv[]) {
     fprintf(fp, "difficulty,skew\n");	 
     
     // print genesis block
+    #ifndef ADAPTIVE
     fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, -1.0, unobservable_hash_rate_function(t));
+    #endif
+    #ifdef ADAPTIVE
+    fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, -1.0, unobservable_hash_rate_function(t, cur_running_avg, prev_running_avg));
+    #endif
     for (int l=0; l<NUMBER_OF_LAYERS; l++) {
         fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
     }
@@ -116,11 +129,27 @@ int main(int argc, char* argv[]) {
             blocks_virtual_relative_targets[n][i] = virtual_relative_target[i];
         }
 
+        #ifndef ADAPTIVE
         fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, unobservable_hash_rate_function(t));
+        #endif
+        #ifdef ADAPTIVE
+        fprintf(fp, "%d,%.0f,%.10lf,%.10lf,%.0f", n, blocks[n].t, blocks[n].t/YEAR, blocks[n].t-blocks[n-1].t, unobservable_hash_rate_function(t, cur_running_avg, prev_running_avg));
+        #endif
         for (int l=0; l<NUMBER_OF_LAYERS; l++) {
             fprintf(fp, ",%.10lf", 1.0/blocks_virtual_relative_targets[n][l]);
         }
         fprintf(fp, ",%.10lf,%0.10lf\n",INITIAL_ABS_TARGET/blocks[n].target, (blocks[n].t-(GENESIS_TIME+n*IDEAL_INTERBLOCK_TIME))/FORTNIGHT);	 
+    
+        #ifdef ADAPTIVE
+        q_cur.push(1.0/(blocks[n].target)/INITIAL_ABS_DIFFICULTY);
+        cur_running_sum = cur_running_sum + q_cur.back() - q_cur.front();
+        cur_running_avg = cur_running_sum / NUM_OF_LAST_BLOCKS;
+        q_prev.push(q_cur.front());
+        prev_running_sum = prev_running_sum + q_prev.back() - q_prev.front();
+        prev_running_avg = prev_running_sum / NUM_OF_LAST_BLOCKS;
+        q_cur.pop();
+        q_prev.pop();
+        #endif
     }
     delete[] virtual_relative_target;
 

@@ -1,6 +1,6 @@
 # Define the compiler and flags
 CXX = clang++
-CXXFLAGS = -std=c++17 -stdlib=libc++ -Wall -O2
+CXXFLAGS = -std=c++23 -stdlib=libc++ -Wall -O2
 
 # Names of all the executables
 EXEC_NEFDAN = simulation_NefdaN
@@ -14,18 +14,18 @@ ALL_EXECS = $(EXEC_NEFDAN) $(EXEC_BTC) $(EXEC_LWMA) $(EXEC_DIGISHIELD)
 all: $(ALL_EXECS)
 
 # Compile rules for each individual executable
-# Added hashrate.cpp to the compilation and hashrate.h as a dependency
+# FIX: Removed hashrate.cpp from the compilation call, but kept it as a tracking dependency
 $(EXEC_NEFDAN): simulation_NefdaN.cpp hashrate.cpp hashrate.h
-	$(CXX) $(CXXFLAGS) -o $(EXEC_NEFDAN) simulation_NefdaN.cpp hashrate.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_NEFDAN) simulation_NefdaN.cpp
 
 $(EXEC_BTC): simulation_BTC_DAA.cpp hashrate.cpp hashrate.h
-	$(CXX) $(CXXFLAGS) -o $(EXEC_BTC) simulation_BTC_DAA.cpp hashrate.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_BTC) simulation_BTC_DAA.cpp
 
 $(EXEC_LWMA): simulation_LWMA_DAA.cpp hashrate.cpp hashrate.h
-	$(CXX) $(CXXFLAGS) -o $(EXEC_LWMA) simulation_LWMA_DAA.cpp hashrate.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_LWMA) simulation_LWMA_DAA.cpp
 
 $(EXEC_DIGISHIELD): simulation_Digishield_DAA.cpp hashrate.cpp hashrate.h
-	$(CXX) $(CXXFLAGS) -o $(EXEC_DIGISHIELD) simulation_Digishield_DAA.cpp hashrate.cpp
+	$(CXX) $(CXXFLAGS) -o $(EXEC_DIGISHIELD) simulation_Digishield_DAA.cpp
 
 
 # Run original simulation with parameters 1, 2, 3, 4
@@ -47,10 +47,10 @@ run_lwma: $(EXEC_LWMA)
 run_digishield: $(EXEC_DIGISHIELD)
 	./$(EXEC_DIGISHIELD)
 
-# Run everything: the original run targets + btc
+# Run everything: the original run targets + btc + lwma + digishield
 run_all: run run_btc run_lwma run_digishield
 
-# Clean up all generated executables and any stray object files
+# Clean up all generated executables
 clean:
 	rm -f $(ALL_EXECS)
 

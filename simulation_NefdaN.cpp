@@ -54,7 +54,8 @@ int main(int argc, char* argv[]) {
 
     srand48(time(NULL));
     BlockTemplate *blocks = (BlockTemplate *) calloc(1000000, sizeof(BlockTemplate));
-    double blocks_virtual_relative_targets[1000000][MAX_NUMBER_OF_LAYERS];
+    using LayerMatrix = double[MAX_NUMBER_OF_LAYERS];
+    LayerMatrix* blocks_virtual_relative_targets = new LayerMatrix[1000000];
     int n=0;
     double t = GENESIS_TIME;
     BlockTemplate candidate = {t, INITIAL_ABS_TARGET, {0} };
@@ -152,7 +153,7 @@ int main(int argc, char* argv[]) {
         #endif
     }
     delete[] virtual_relative_target;
-
+    delete[] blocks_virtual_relative_targets;
     free(blocks);
       
     return 0;

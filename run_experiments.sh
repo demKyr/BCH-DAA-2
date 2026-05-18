@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NUM_RUNS=1
+NUM_RUNS=30
 
 echo "=========================================================="
 echo " Starting Automated Multi-Run Simulation Framework "
